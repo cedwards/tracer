@@ -6,10 +6,10 @@ GitHub Enterprise webhooks trigger the replication, and notify events are sent
 to each node as defined in the ``replication.map``.
 
 Defined endpoints are:
- * /docs/ : usage instructions
- * /cgit/ : web interface
- * /v1/clone/<project>/<repo> : clone / replicate repo
- * /v1/fetch/<project>/<repo> : fetch / update repo
+ * ``/docs/`` : usage instructions
+ * ``/cgit/`` : web interface
+ * ``/v1/clone/<project>/<repo>`` : clone / replicate repo
+ * ``/v1/fetch/<project>/<repo>`` : fetch / update repo
 
 Note: /clone/ and /fetch/ can be used interchangeably and will automatically
 call the appropriate underlying function.
