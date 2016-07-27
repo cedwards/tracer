@@ -1,0 +1,31 @@
+repo_path: /srv/http/tracer/repositories
+
+map:
+  172.31.23.242:
+    notify:
+      - 172.31.19.241
+    source: https://github.com
+
+  172.31.19.241:
+    notify:
+      - 172.31.16.46
+    source: http://172.31.23.242
+
+  172.31.16.46:
+    notify:
+      - 172.31.16.47
+    source: http://172.31.19.241
+
+  172.31.16.47:
+    notify:
+      - 172.31.16.44
+    source: http://172.31.16.46
+
+  172.31.16.44:
+    notify:
+      - 172.31.16.45
+    source: http://172.31.16.47
+
+  172.31.16.45:
+    notify: False
+    source: http://172.31.16.44
