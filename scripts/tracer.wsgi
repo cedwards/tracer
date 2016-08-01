@@ -10,6 +10,7 @@ to each node as defined in the ``replication.map``.
 Defined endpoints are:
  * /docs/ : usage instructions
  * /cgit/ : web interface
+ * /v1/list/<project> : list existing repo(s)
  * /v1/clone/<project>/<repo> : clone / replicate repo
  * /v1/fetch/<project>/<repo> : fetch / update repo
 
@@ -31,7 +32,6 @@ possible.
 .. code-block:: yaml
 
     repo_path: /srv/http/api/repositories
-    default_source: https://github.com
 
     map:
       172.31.15.241:
@@ -61,10 +61,12 @@ Roadmap
 '''
 
 from bottle import route, default_app, redirect, error
+from bottle import response
 import logging
 import socket
 import os
 
+from sh import ls
 from sh import git
 import requests
 import yaml
@@ -104,9 +106,9 @@ def _clone(project, repo):
 
     if not os.path.exists(os.path.join(path, project, repo)):
         if requests.get(clone_url):
-            return git.clone('--bare', clone_url, clone_path, _err_to_out=True, _cwd=path)
+            return git.clone('--mirror', clone_url, clone_path, _err_to_out=True, _cwd=path)
         if requests.get(upstream):
-            return git.clone('--bare', upstream, clone_path, _err_to_out=True, _cwd=path)
+            return git.clone('--mirror', upstream, clone_path, _err_to_out=True, _cwd=path)
         else:
             parent_url = '{0}/v1/clone/{1}/{2}'.format(source, project, repo)
             requests.get(parent_url)
@@ -145,6 +147,7 @@ def clone(project, repo):
     '''
     Clone the repo; notify peer(s)
     '''
+    response.content_type='application/json'
     repo_path = '{0}/{1}'.format(project, repo)
 
     _clone(project, repo)
@@ -157,6 +160,7 @@ def fetch(project, repo):
     '''
     Fetch updates; notify peer(s)
     '''
+    response.content_type='application/json'
     repo_path = '{0}/{1}'.format(project, repo)
 
     _fetch(project, repo)
@@ -164,33 +168,41 @@ def fetch(project, repo):
     redirect('/cgit/{0}'.format(repo_path))
 
 
+@route('/list/<project>', method='GET')
+def list(project):
+    '''
+    List repositories
+    '''
+    response.content_type='application/json'
+    path = _config('repo_path')
+    if not os.path.exists(path + '/' + project):
+        return 'Repository not replicated'
+    return ls(path + '/' + project)
+
+
 @route('/docs')
 def docs():
-    '''
-    Documentation
-    '''
+    response.content_type='application/json'
     output = '''
-        Supported endpoints are:</br>
-        <ul>
-        <li>/cgit/ : cgit web interface </li>
-        <li>/v1/clone/&ltproject&gt/&ltrepo&gt : clone (replicate) project/repo </li>
-        <li>/v1/fetch/&ltproject&gt/&ltrepo&gt : fetch (update) project/repo </li>
-        </ul>
-    '''
+Supported endpoints are:
+
+/cgit/ : cgit web interface
+/v1/clone/&ltproject&gt/&ltrepo&gt : clone (replicate) project/repo
+/v1/fetch/&ltproject&gt/&ltrepo&gt : fetch (update) project/repo
+
+'''
     return output
 
 
 @error(404)
 def error404():
-    '''
-    404 Not Found
-    '''
+    response.content_type='application/json'
     output = '''
-        Supported endpoints are:</br>
-        <ul>
-        <li>/cgit/ : cgit web interface </li>
-        <li>/v1/clone/&ltproject&gt/&ltrepo&gt : clone (replicate) project/repo </li>
-        <li>/v1/fetch/&ltproject&gt/&ltrepo&gt : fetch (update) project/repo </li>
-        </ul>
-    '''
+Supported endpoints are:</br>
+
+/cgit/ : cgit web interface </li>
+/v1/clone/&ltproject&gt/&ltrepo&gt : clone (replicate) project/repo
+/v1/fetch/&ltproject&gt/&ltrepo&gt : fetch (update) project/repo
+
+'''
     return output

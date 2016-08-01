@@ -5,19 +5,20 @@ The following is a list of IP addresses currently running as Tracer nodes.
 Note: These nodes are listed in the same order as listed in the current
 ``replication.map``.:
 
-* http://52.36.63.245/
-* http://52.27.135.176/
-* http://52.40.106.116/
-* http://52.40.253.162/
-* http://52.41.30.94/
-* http://52.38.241.159/
+ * http://52.36.63.245/
+ * http://52.27.135.176/
+ * http://52.40.106.116/
+ * http://52.40.253.162/
+ * http://52.41.30.94/
+ * http://52.38.241.159/
 
 Accessible endpoints are: 
-* ``/docs/``
-* ``/cgit/``
-* ``/v1/clone/<project>/<repo>``
-* ``/v1/fetch/<project>/<repo>``
-* ``/v1/list/<project>``
+ * ``/docs/``
+ * ``/cgit/``
+ * ``/v1/list/<project>``
+ * ``/v1/clone/<project>/<repo>``
+ * ``/v1/fetch/<project>/<repo>``
+ * ``/v1/list/<project>``
 
 Test Cases
 ----------
