@@ -126,6 +126,7 @@ def _fetch(project, repo):
         os.chdir(os.path.join(path, project, repo))
         git.fetch(_err_to_out=True)
         redirect('/cgit/' + project + '/' + repo)
+        return
     return _clone(project, repo)
 
 
